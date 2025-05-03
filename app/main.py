@@ -114,7 +114,6 @@ def extract_description(content: str) -> str:
     return re.sub(r'#+\s*', '', first_para)[:200]
 
 def initialize_services():
-    """Free-tier optimized initialization"""
     if state.initializing or state.initialized:
         return
 
@@ -122,34 +121,28 @@ def initialize_services():
     logger.info("Starting lightweight initialization...")
 
     try:
-        # Generate project summary first
         generate_project_summary()
         
-        # Load knowledge base chunks
         chunks = load_and_chunk_readmes(
             readme_dir=settings.README_DIR,
             chunk_size=300,
             overlap=50
-        )[:50]
+        )[:30]  # Reduce chunk count for Gitpod
         
-        # Create vector store
-        state.vector_db = build_vector_store(chunks, index_size=100)
+        state.vector_db = build_vector_store(chunks, index_size=50)  # Smaller index
         
-        # Load LLM
-        state.llm = TinyLlama(
-            load_in_8bit=True,
-            low_cpu_mem_usage=True
-        )
+        # Initialize with CPU-only to save memory
+        os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Force CPU
+        state.llm = TinyLlama()
         
         state.initialized = True
         logger.info("Services initialized successfully")
-
     except Exception as e:
         state.error = str(e)
         logger.critical(f"Initialization failed: {str(e)}")
     finally:
         state.initializing = False
-
+        
 @app.on_event("startup")
 async def startup_event():
     """Delayed startup for free tier cold starts"""

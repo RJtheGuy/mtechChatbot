@@ -1,12 +1,16 @@
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 import logging
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-def build_vector_store(chunks: List[Dict], model_name: str = "all-MiniLM-L6-v2") -> FAISS:
-    """Build FAISS vector store from chunks with proper error handling."""
+def build_vector_store(
+    chunks: List[Dict],
+    model_name: str = "all-MiniLM-L6-v2",
+    index_size: Optional[int] = None
+) -> FAISS:
+    """Build FAISS vector store from chunks with optional size limit and proper error handling."""
     try:
         logger.info(f"Initializing embeddings with model: {model_name}")
         embeddings_model = HuggingFaceEmbeddings(model_name=model_name)
@@ -16,6 +20,11 @@ def build_vector_store(chunks: List[Dict], model_name: str = "all-MiniLM-L6-v2")
 
         if not texts or not metadatas:
             raise ValueError("No valid texts or metadata provided")
+
+        if index_size is not None:
+            texts = texts[:index_size]
+            metadatas = metadatas[:index_size]
+            logger.info(f"Truncated to first {index_size} chunks for FAISS indexing")
 
         logger.info(f"Creating vector store with {len(texts)} chunks...")
         faiss_db = FAISS.from_texts(
