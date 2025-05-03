@@ -2,13 +2,13 @@ services:
   - type: web
     name: mtech-chatbot-api
     runtime: python
-    pythonVersion: "3.9"  # Simplified version specification
+    pythonVersion: "3.9"
     buildCommand: |
       pip install -r requirements.txt
       mkdir -p ./knowledge_base
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000 --workers 1
     envVars:
-      - key: KNOWLEDGE_BASE_DIR  # Changed from README_DIR to match your config
+      - key: README_DIR 
         value: ./knowledge_base
       - key: PORT
         value: 10000
