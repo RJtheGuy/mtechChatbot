@@ -138,7 +138,7 @@ def initialize_services():
         state.vector_db = build_vector_store(chunks, index_size=20)
         
         # CPU-only initialization
-        os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Force CPU
+        os.environ["CUDA_VISIBLE_DEVICES"] = "1"  # Force CPU
         state.llm = TinyLlama()  # No 8-bit loading
         
         state.initialized = True
