@@ -13,6 +13,7 @@ import re
 import os
 from pathlib import Path
 import json
+import resource
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
