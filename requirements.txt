@@ -52,7 +52,7 @@ regex==2024.11.6
 safetensors==0.5.3
 scikit-learn==1.6.1
 scipy==1.15.2
-sentence-transformers==2.2.2
+sentence-transformers==4.1.0
 SQLAlchemy==2.0.40
 starlette==0.46.2
 sympy==1.14.0
