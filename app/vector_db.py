@@ -5,42 +5,33 @@ from typing import Tuple, List, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-def build_vector_store(
-    chunks: List[Dict],
-    model_name: str = "all-MiniLM-L6-v2",
-    index_size: Optional[int] = None
-) -> FAISS:
-    """Build FAISS vector store from chunks with optional size limit and proper error handling."""
+def build_vector_store(chunks: List[Dict], model_name: str = "all-MiniLM-L6-v2"):
     try:
-        logger.info(f"Initializing embeddings with model: {model_name}")
-        embeddings_model = HuggingFaceEmbeddings(model_name=model_name)
+        from sentence_transformers import SentenceTransformer
+        
+        # Load lightweight embeddings
+        model = SentenceTransformer(
+            model_name,
+            device="cpu",
+            cache_folder="/tmp/model_cache"
+        )
         
         texts = [chunk["text"] for chunk in chunks]
         metadatas = [chunk["metadata"] for chunk in chunks]
-
-        if not texts or not metadatas:
-            raise ValueError("No valid texts or metadata provided")
-
-        if index_size is not None:
-            texts = texts[:index_size]
-            metadatas = metadatas[:index_size]
-            logger.info(f"Truncated to first {index_size} chunks for FAISS indexing")
-
-        logger.info(f"Creating vector store with {len(texts)} chunks...")
-        faiss_db = FAISS.from_texts(
-            texts=texts,
-            embedding=embeddings_model,
-            metadatas=metadatas
-        )
-
-        if not faiss_db:
-            raise RuntimeError("FAISS vector store creation failed")
-
-        logger.info("Vector store created successfully")
-        return faiss_db
-
+        
+        # Use smaller batch size
+        embeddings = model.encode(texts, batch_size=8, show_progress_bar=False)
+        
+        # Create FAISS index directly
+        import faiss
+        dimension = embeddings.shape[1]
+        index = faiss.IndexFlatL2(dimension)
+        index.add(embeddings)
+        
+        return index
+        
     except Exception as e:
-        logger.error(f"Vector store creation failed: {str(e)}", exc_info=True)
+        logger.error(f"Vector store creation failed: {str(e)}")
         raise
 
 def retrieve_relevant_text(query: str, db: FAISS, k: int = 3) -> Tuple[List[str], List[Dict]]:
