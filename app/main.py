@@ -251,7 +251,7 @@ if __name__ == "__main__":
     uvicorn.run(
         app, 
         host="0.0.0.0", 
-        port=int(os.getenv("PORT", 1000)),
+        port=int(os.getenv("PORT", 4000)),
         workers=1,
         timeout_keep_alive=30
     )
