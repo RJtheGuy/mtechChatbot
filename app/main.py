@@ -114,35 +114,41 @@ def extract_description(content: str) -> str:
     return re.sub(r'#+\s*', '', first_para)[:200]
 
 def initialize_services():
+    """Render-optimized initialization"""
     if state.initializing or state.initialized:
         return
 
     state.initializing = True
-    logger.info("Starting lightweight initialization...")
+    logger.info("Starting Render-optimized initialization...")
 
     try:
+        # Set memory limits (critical for free tier)
+        resource.setrlimit(resource.RLIMIT_AS, (400 * 1024 * 1024, 400 * 1024 * 1024))
+
+        # Load components sequentially
         generate_project_summary()
         
+        # Reduced resources for Render
         chunks = load_and_chunk_readmes(
-            readme_dir=settings.README_DIR,
-            chunk_size=300,
-            overlap=50
-        )[:30]  # Reduce chunk count for Gitpod
+            readme_dir=settings.KNOWLEDGE_BASE_DIR,
+            chunk_size=200,  # Smaller chunks
+            overlap=30
+        )[:20]  # Only first 20 chunks
         
-        state.vector_db = build_vector_store(chunks, index_size=50)  # Smaller index
+        state.vector_db = build_vector_store(chunks, index_size=20)
         
-        # Initialize with CPU-only to save memory
+        # CPU-only initialization
         os.environ["CUDA_VISIBLE_DEVICES"] = ""  # Force CPU
-        state.llm = TinyLlama()
+        state.llm = TinyLlama()  # No 8-bit loading
         
         state.initialized = True
-        logger.info("Services initialized successfully")
+        logger.info("Render services initialized")
     except Exception as e:
         state.error = str(e)
         logger.critical(f"Initialization failed: {str(e)}")
     finally:
         state.initializing = False
-        
+
 @app.on_event("startup")
 async def startup_event():
     """Delayed startup for free tier cold starts"""
