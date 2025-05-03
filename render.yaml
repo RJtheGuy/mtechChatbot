@@ -6,7 +6,7 @@ services:
     buildCommand: |
       pip install -r requirements.txt
       mkdir -p ./knowledge_base
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 10000 --workers 1
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port 4000 --workers 1
     envVars:
       - key: README_DIR 
         value: ./knowledge_base
