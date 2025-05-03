@@ -129,12 +129,11 @@ def initialize_services():
         # Load components sequentially
         generate_project_summary()
         
-        # Reduced resources for Render
         chunks = load_and_chunk_readmes(
             readme_dir=settings.README_DIR,
-            chunk_size=200,  # Smaller chunks
+            chunk_size=200,
             overlap=30
-        )[:20]  # Only first 20 chunks
+        )  
         
         state.vector_db = build_vector_store(chunks, index_size=20)
         
