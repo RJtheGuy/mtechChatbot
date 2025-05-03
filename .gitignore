@@ -1,4 +1,19 @@
-# Log files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.egg-info/
+.installed.cfg
+*.egg
+.DS_Store
+*.swp
+*.swo
+.vscode/
+.idea/
 *.log
-logs/
-app/logs/
