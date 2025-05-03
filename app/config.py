@@ -3,12 +3,10 @@ import os
 
 class Settings:
     LLM_MODEL = "TinyLlama/TinyLlama-1.1B-Chat-v1.0" 
-    EMBEDDING_MODEL = "sentence-transformers/paraphrase-MiniLM-L3-v2"
-
-
+    EMBEDDING_MODEL = "all-MiniLM-L6-v2"
     
     README_DIR = Path(__file__).parent.parent / "knowledge_base"
-    CHUNK_SIZE = 500
+    CHUNK_SIZE = 400
     CHUNK_OVERLAP = 50
     
     # Server
