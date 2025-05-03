@@ -131,7 +131,7 @@ def initialize_services():
         
         # Reduced resources for Render
         chunks = load_and_chunk_readmes(
-            readme_dir=settings.KNOWLEDGE_BASE_DIR,
+            readme_dir=settings.README_DIR,
             chunk_size=200,  # Smaller chunks
             overlap=30
         )[:20]  # Only first 20 chunks
