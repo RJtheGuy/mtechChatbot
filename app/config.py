@@ -28,7 +28,7 @@ class Settings:
     
     # Server configuration
     HOST = "0.0.0.0"
-    PORT = int(os.getenv("PORT", 8000))
+    PORT = int(os.getenv("PORT", 4000))
     RELOAD = os.getenv("ENVIRONMENT", "production") == "development"
     
     # Resource limits
